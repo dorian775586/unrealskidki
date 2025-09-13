@@ -113,94 +113,91 @@
         import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : null;
+        const firebaseConfig = typeof __firebase_config !== 'undefined' && __firebase_config ? JSON.parse(__firebase_config) : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let app;
         let db;
         let auth;
+        const statusMessage = document.getElementById('status-message');
+        const form = document.getElementById('add-offer-form');
 
         if (firebaseConfig) {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
             console.log("Firebase initialized successfully.");
-        } else {
-            console.error("Firebase config is missing from the environment. The app will not function correctly.");
-            document.getElementById('status-message').textContent = "Ошибка: конфигурация Firebase отсутствует. Приложение не будет работать.";
-            document.getElementById('status-message').className = 'text-red-500 font-medium mt-4';
-        }
 
-        const form = document.getElementById('add-offer-form');
-        const statusMessage = document.getElementById('status-message');
-
-        async function authenticate() {
-            if (!auth) {
-                console.error("Authentication skipped: Firebase is not initialized.");
-                return;
-            }
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                    console.log('Authenticated with custom token.');
-                } else {
-                    await signInAnonymously(auth);
-                    console.log('Signed in anonymously.');
+            async function authenticate() {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                        console.log('Authenticated with custom token.');
+                    } else {
+                        await signInAnonymously(auth);
+                        console.log('Signed in anonymously.');
+                    }
+                } catch (error) {
+                    console.error("Authentication error:", error);
+                    statusMessage.textContent = "Ошибка авторизации. Попробуйте обновить страницу.";
+                    statusMessage.className = 'text-red-500 font-medium mt-4';
                 }
-            } catch (error) {
-                console.error("Authentication error:", error);
-                statusMessage.textContent = "Ошибка авторизации. Попробуйте обновить страницу.";
-                statusMessage.className = 'text-red-500 font-medium mt-4';
-            }
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!auth || !auth.currentUser) {
-                statusMessage.textContent = "Ошибка: не удалось авторизоваться. Попробуйте обновить страницу.";
-                statusMessage.className = 'text-red-500 font-medium mt-4';
-                return;
             }
 
-            statusMessage.textContent = "Сохраняем...";
-            statusMessage.className = 'text-blue-500 font-medium mt-4';
-
-            const formData = new FormData(form);
-            const newOffer = {
-                title: formData.get('title'),
-                imageUrl: formData.get('imageUrl'),
-                description: formData.get('description'),
-                category: formData.get('category'),
-                city: formData.get('city'),
-                discount: parseInt(formData.get('discount')),
-                price: parseInt(formData.get('price')),
-                start_date: new Date(formData.get('start_date')).toISOString(),
-                end_date: new Date(formData.get('end_date')).toISOString(),
-                createdAt: new Date().toISOString()
-            };
-
-            try {
-                if (!db) {
-                    statusMessage.textContent = "Ошибка: база данных не инициализирована.";
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!auth || !auth.currentUser) {
+                    statusMessage.textContent = "Ошибка: не удалось авторизоваться. Попробуйте обновить страницу.";
                     statusMessage.className = 'text-red-500 font-medium mt-4';
                     return;
                 }
-                const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
-                await addDoc(offersCollectionRef, newOffer);
-                
-                statusMessage.textContent = "Акция успешно добавлена!";
-                statusMessage.className = 'text-green-500 font-medium mt-4';
-                form.reset();
-            } catch (error) {
-                console.error("Error adding document:", error);
-                statusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
-                statusMessage.className = 'text-red-500 font-medium mt-4';
-            }
-        });
 
-        authenticate();
+                statusMessage.textContent = "Сохраняем...";
+                statusMessage.className = 'text-blue-500 font-medium mt-4';
+
+                const formData = new FormData(form);
+                const newOffer = {
+                    title: formData.get('title'),
+                    imageUrl: formData.get('imageUrl'),
+                    description: formData.get('description'),
+                    category: formData.get('category'),
+                    city: formData.get('city'),
+                    discount: parseInt(formData.get('discount')),
+                    price: parseInt(formData.get('price')),
+                    start_date: new Date(formData.get('start_date')).toISOString(),
+                    end_date: new Date(formData.get('end_date')).toISOString(),
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
+                    await addDoc(offersCollectionRef, newOffer);
+                    
+                    statusMessage.textContent = "Акция успешно добавлена!";
+                    statusMessage.className = 'text-green-500 font-medium mt-4';
+                    form.reset();
+                } catch (error) {
+                    console.error("Error adding document:", error);
+                    statusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
+                    statusMessage.className = 'text-red-500 font-medium mt-4';
+                }
+            });
+
+            authenticate();
+        } else {
+            console.error("Firebase config is missing. The app will not connect to the database.");
+            statusMessage.textContent = "Ошибка: конфигурация Firebase отсутствует. Форма не будет сохранять данные.";
+            statusMessage.className = 'text-red-500 font-medium mt-4';
+
+            // Предотвращаем отправку формы, если Firebase не инициализирован
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                statusMessage.textContent = "Ошибка: конфигурация Firebase отсутствует. Форма не будет сохранять данные.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
+            });
+        }
     </script>
 </body>
 </html>
