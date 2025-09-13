@@ -10,6 +10,8 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .form-container, .offers-container {
             max-width: 600px;
@@ -24,7 +26,7 @@
             padding: 0.75rem 1rem;
             border-radius: 0.75rem;
             border: 1px solid #d1d5db;
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
             margin-top: 0.25rem;
         }
         .input-field:focus {
@@ -44,12 +46,36 @@
         .btn-primary:hover {
             background-color: #2563eb;
         }
+        .btn-delete {
+            padding: 0.5rem 1rem;
+            background-color: #ef4444;
+            color: #ffffff;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-delete:hover {
+            background-color: #dc2626;
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .offers-container {
+            margin-top: 2rem;
+        }
     </style>
 </head>
 <body class="bg-blue-50">
 
     <div class="form-container">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Добавить новую акцию</h1>
+        <a href="index.html" class="flex items-center justify-center gap-2 text-blue-500 hover:text-blue-700 font-medium mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Вернуться на главную
+        </a>
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Панель администратора Nolikby</h1>
+        <h2 class="text-xl font-semibold text-center text-gray-700 mb-4">Добавить новую акцию</h2>
         <form id="add-offer-form" class="space-y-4">
             <div>
                 <label for="offer-title" class="block text-gray-700 font-medium">Название акции</label>
@@ -104,12 +130,12 @@
                     <input type="date" id="offer-end-date" name="end_date" required class="input-field">
                 </div>
             </div>
-            <div id="add-status-message" class="text-center font-medium mt-4"></div>
+            <div id="status-message" class="text-center font-medium mt-4"></div>
             <button type="submit" class="btn-primary">Добавить акцию</button>
         </form>
     </div>
 
-    <div class="offers-container mt-8">
+    <div class="offers-container">
         <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Управление акциями</h2>
         <div id="offers-list" class="space-y-4">
             <div id="loading" class="text-center text-gray-500">Загрузка акций...</div>
@@ -117,64 +143,96 @@
         </div>
     </div>
 
+    <!-- Модальное окно для подтверждения удаления -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+        <div class="bg-white rounded-xl p-8 max-w-sm mx-auto shadow-lg">
+            <h3 class="text-lg font-bold mb-4">Подтверждение удаления</h3>
+            <p class="mb-6">Вы уверены, что хотите удалить эту акцию?</p>
+            <div class="flex justify-end gap-4">
+                <button id="cancel-delete" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">Отмена</button>
+                <button id="confirm-delete" class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600">Удалить</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Вставьте сюда ваш конфиг Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBVKxZjiE3iVoUOSRJkQhjjA4qXQmf9Xn8",
-            authDomain: "nolikby-ae0a3.firebaseapp.com",
-            projectId: "nolikby-ae0a3",
-            storageBucket: "nolikby-ae0a3.firebasestorage.app",
-            messagingSenderId: "77429404737",
-            appId: "1:77429404737:web:2dc91ad36d1eb2437182c0"
-        };
-        const appId = firebaseConfig.projectId;
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        setLogLevel('debug'); // Включаем логи для отладки
 
         let app;
         let db;
         let auth;
-        let isFirebaseReady = false;
+        let isAuthReady = false;
 
-        const addStatusMessage = document.getElementById('add-status-message');
+        const statusMessage = document.getElementById('status-message');
         const offersListElement = document.getElementById('offers-list');
         const loadingElement = document.getElementById('loading');
         const noOffersElement = document.getElementById('no-offers');
+        const deleteModal = document.getElementById('delete-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete');
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        let docIdToDelete = null;
 
-        if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+        async function initializeFirebase() {
+            if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+                console.error("Firebase configuration is missing.");
+                statusMessage.textContent = "Ошибка: конфигурация Firebase отсутствует. Приложение не будет работать.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
+                return;
+            }
+
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                isFirebaseReady = true;
-                console.log("Firebase initialized successfully.");
+                
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log('Signed in with custom token.');
+                } else {
+                    await signInAnonymously(auth);
+                    console.log('Signed in anonymously.');
+                }
+                
+                isAuthReady = true;
+                console.log("Firebase initialized and authenticated successfully.");
+                setupRealtimeListener();
             } catch (e) {
-                console.error("Firebase initialization failed:", e);
-                isFirebaseReady = false;
-                addStatusMessage.textContent = "Ошибка: не удалось инициализировать Firebase. Проверьте конфигурацию.";
-                addStatusMessage.className = 'text-red-500 font-medium mt-4';
-            }
-        } else {
-            console.warn("Firebase configuration is missing. The app will not connect to the database.");
-            addStatusMessage.textContent = "Ошибка: конфигурация Firebase отсутствует. Форма не будет сохранять данные.";
-            addStatusMessage.className = 'text-red-500 font-medium mt-4';
-        }
-
-        async function authenticate() {
-            if (!isFirebaseReady) return;
-            try {
-                await signInAnonymously(auth);
-                console.log('Signed in anonymously.');
-            } catch (error) {
-                console.error("Authentication error:", error);
-                addStatusMessage.textContent = "Ошибка авторизации. Попробуйте обновить страницу.";
-                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+                console.error("Firebase initialization or authentication failed:", e);
+                statusMessage.textContent = "Ошибка: не удалось инициализировать Firebase. Проверьте консоль.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
             }
         }
 
-        // Рендерим акции
+        function setupRealtimeListener() {
+            if (!isAuthReady) {
+                console.warn("Attempted to set up listener before authentication was ready.");
+                return;
+            }
+
+            const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
+            
+            onSnapshot(offersCollectionRef, (snapshot) => {
+                loadingElement.classList.add('hidden');
+                const offers = [];
+                snapshot.forEach(doc => {
+                    offers.push({ id: doc.id, ...doc.data() });
+                });
+                renderOffers(offers);
+            }, (error) => {
+                console.error("Ошибка при получении акций:", error);
+                loadingElement.classList.add('hidden');
+                offersListElement.innerHTML = `<div class="text-center text-red-500">Ошибка загрузки акций.</div>`;
+            });
+        }
+
         const renderOffers = (offers) => {
             offersListElement.innerHTML = '';
             if (offers.length === 0) {
@@ -189,61 +247,59 @@
                             <p class="font-bold">${offer.title}</p>
                             <p class="text-sm text-gray-600">${offer.city}, ${offer.category}</p>
                         </div>
-                        <button data-id="${offer.id}" class="delete-btn px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors">Удалить</button>
+                        <button data-id="${offer.id}" class="delete-btn btn-delete">Удалить</button>
                     `;
                     offersListElement.appendChild(offerElement);
                 });
             }
         };
 
-        // Удаление акции
-        const deleteOffer = async (docId) => {
-            if (!isFirebaseReady || !auth.currentUser) return;
+        const showDeleteModal = (docId) => {
+            docIdToDelete = docId;
+            deleteModal.classList.remove('hidden');
+        };
+
+        const hideDeleteModal = () => {
+            docIdToDelete = null;
+            deleteModal.classList.add('hidden');
+        };
+
+        const deleteOffer = async () => {
+            if (!isAuthReady || !docIdToDelete) return;
             try {
-                const docRef = doc(db, "offers", docId);
+                const docRef = doc(db, `artifacts/${appId}/public/data/offers`, docIdToDelete);
                 await deleteDoc(docRef);
                 console.log("Документ успешно удален!");
+                hideDeleteModal();
             } catch (error) {
                 console.error("Ошибка при удалении документа: ", error);
+                hideDeleteModal();
             }
         };
 
-        // Слушаем клики на кнопки "Удалить"
         offersListElement.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-btn')) {
                 const docId = e.target.dataset.id;
                 if (docId) {
-                    deleteOffer(docId);
+                    showDeleteModal(docId);
                 }
             }
         });
 
-        // Слушаем изменения коллекции offers в реальном времени
-        const offersCollectionRef = collection(db, "offers");
-        onSnapshot(offersCollectionRef, (snapshot) => {
-            loadingElement.classList.add('hidden');
-            const offers = [];
-            snapshot.forEach(doc => {
-                offers.push({ id: doc.id, ...doc.data() });
-            });
-            renderOffers(offers);
-        }, (error) => {
-            console.error("Ошибка при получении акций:", error);
-            loadingElement.classList.add('hidden');
-            offersListElement.innerHTML = `<div class="text-center text-red-500">Ошибка загрузки акций.</div>`;
-        });
+        confirmDeleteBtn.addEventListener('click', deleteOffer);
+        cancelDeleteBtn.addEventListener('click', hideDeleteModal);
 
         document.getElementById('add-offer-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (!isFirebaseReady || !auth.currentUser) {
-                addStatusMessage.textContent = "Ошибка: не удалось авторизоваться или Firebase не готов. Попробуйте обновить страницу.";
-                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+            if (!isAuthReady) {
+                statusMessage.textContent = "Ошибка: не удалось авторизоваться или Firebase не готов. Попробуйте обновить страницу.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
                 return;
             }
 
-            addStatusMessage.textContent = "Сохраняем...";
-            addStatusMessage.className = 'text-blue-500 font-medium mt-4';
+            statusMessage.textContent = "Сохраняем...";
+            statusMessage.className = 'text-blue-500 font-medium mt-4';
 
             const formData = new FormData(e.target);
             const newOffer = {
@@ -260,20 +316,18 @@
             };
 
             try {
-                await addDoc(collection(db, "offers"), newOffer);
-                addStatusMessage.textContent = "Акция успешно добавлена!";
-                addStatusMessage.className = 'text-green-500 font-medium mt-4';
+                await addDoc(collection(db, `artifacts/${appId}/public/data/offers`), newOffer);
+                statusMessage.textContent = "Акция успешно добавлена!";
+                statusMessage.className = 'text-green-500 font-medium mt-4';
                 e.target.reset();
             } catch (error) {
                 console.error("Error adding document:", error);
-                addStatusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
-                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+                statusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
             }
         });
 
-        if (isFirebaseReady) {
-            authenticate();
-        }
+        initializeFirebase();
     </script>
 </body>
 </html>

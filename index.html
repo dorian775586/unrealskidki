@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nolikby - Каталог Акций</title>
+    <title>Панель Администратора Nolikby</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,159 +11,118 @@
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
-        .offer-card {
-            display: flex;
-            flex-direction: column;
+        .form-container, .offers-container {
+            max-width: 600px;
+            margin: 2rem auto;
             background-color: #ffffff;
+            padding: 2rem;
             border-radius: 1.5rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
-        .offer-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .offer-image {
+        .input-field {
             width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background-color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin-top: 0.25rem;
         }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            padding: 0.5rem 0;
-            color: #6b7280;
-            font-size: 0.75rem;
-            text-decoration: none;
-            transition: color 0.2s ease-in-out;
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
-        .nav-item.active {
-            color: #3b82f6;
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #3b82f6;
+            color: #ffffff;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
         }
-        .nav-item:hover {
-            color: #3b82f6;
-        }
-        .category-item {
-            cursor: pointer;
-        }
-        .category-item.active {
-            outline: 2px solid #3b82f6;
-            outline-offset: 4px;
+        .btn-primary:hover {
+            background-color: #2563eb;
         }
     </style>
 </head>
 <body class="bg-blue-50">
 
-    <div id="app" class="min-h-screen pb-20">
-        <!-- Шапка -->
-        <header id="main-header" class="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-10">
-            <div class="container mx-auto flex items-center justify-between">
-                <button class="text-blue-500 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-                <div class="flex items-center justify-center text-lg font-bold text-gray-800 mx-4">
-                    <span>Гомель</span>
-                    <svg class="w-5 h-5 ml-2 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </div>
-                <!-- Ссылка на админ-панель -->
-                <a href="admin.html" class="text-blue-500 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none" title="Панель администратора">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </a>
+    <div class="form-container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Добавить новую акцию</h1>
+        <form id="add-offer-form" class="space-y-4">
+            <div>
+                <label for="offer-title" class="block text-gray-700 font-medium">Название акции</label>
+                <input type="text" id="offer-title" name="title" required class="input-field">
             </div>
-        </header>
-
-        <main class="container mx-auto p-4 md:p-6">
-            <!-- Баннер -->
-            <section class="mb-8">
-                <div class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl overflow-hidden shadow-xl md:h-56 h-40 relative flex items-center justify-center p-4 text-white text-center">
-                    <h3 class="text-3xl font-bold">Скидка до 70% на всё!</h3>
-                    <p class="text-lg mt-2">Эксклюзивно для наших пользователей</p>
-                </div>
-            </section>
-
-            <!-- Поиск -->
-            <section class="mb-8">
-                <div class="relative">
-                    <input type="text" id="search-input" placeholder="Я ищу..." class="w-full py-3 px-5 pr-12 rounded-full text-gray-800 text-base shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    <svg class="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-            </section>
-            
-            <!-- Категории -->
-            <section id="categories-section" class="mb-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Категории</h2>
-                <div id="categories-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Все">
-                        <span class="text-base font-medium text-gray-700">Все</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Еда">
-                        <span class="text-base font-medium text-gray-700">Еда</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Одежда">
-                        <span class="text-base font-medium text-gray-700">Одежда</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Электроника">
-                        <span class="text-base font-medium text-gray-700">Электроника</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Красота">
-                        <span class="text-base font-medium text-gray-700">Красота</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Дом">
-                        <span class="text-base font-medium text-gray-700">Дом</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Развлечения">
-                        <span class="text-base font-medium text-gray-700">Развлечения</span>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Все акции -->
-            <section>
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Все акции</h2>
-                <div id="loading" class="text-center text-gray-500 font-semibold text-lg">Загрузка...</div>
-                <div id="error" class="text-center text-red-500 font-semibold text-lg hidden">Ошибка при загрузке акций</div>
-                <div id="offers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                <div id="no-offers" class="text-center text-gray-500 font-semibold text-lg hidden">Акций пока нет.</div>
-            </section>
-        </main>
-
-        <!-- Нижнее меню -->
-        <nav class="fixed bottom-0 left-0 w-full bg-white shadow-2xl border-t border-gray-200 z-20">
-            <div class="container mx-auto flex justify-around h-16">
-                <a href="#" class="nav-item active">
-                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
-                    <span>Главная</span>
-                </a>
-                <a href="#categories-section" id="categories-link" class="nav-item">
-                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                    <span>Категории</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-                    <span>Мои Купоны</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-                    <span>Избранное</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span>Профиль</span>
-                </a>
+            <div>
+                <label for="offer-image" class="block text-gray-700 font-medium">URL фото</label>
+                <input type="url" id="offer-image" name="imageUrl" required class="input-field">
             </div>
-        </nav>
+            <div>
+                <label for="offer-description" class="block text-gray-700 font-medium">Описание</label>
+                <textarea id="offer-description" name="description" rows="4" required class="input-field"></textarea>
+            </div>
+            <div>
+                <label for="offer-category" class="block text-gray-700 font-medium">Категория</label>
+                <select id="offer-category" name="category" required class="input-field">
+                    <option value="" disabled selected>Выберите категорию</option>
+                    <option value="Еда">Еда</option>
+                    <option value="Одежда">Одежда</option>
+                    <option value="Электроника">Электроника</option>
+                    <option value="Красота">Красота</option>
+                    <option value="Дом">Дом</option>
+                    <option value="Развлечения">Развлечения</option>
+                </select>
+            </div>
+            <div>
+                <label for="offer-city" class="block text-gray-700 font-medium">Город</label>
+                <select id="offer-city" name="city" required class="input-field">
+                    <option value="" disabled selected>Выберите город</option>
+                    <option value="Гомель">Гомель</option>
+                    <option value="Минск">Минск</option>
+                    <option value="Брест">Брест</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="offer-discount" class="block text-gray-700 font-medium">Скидка (%)</label>
+                    <input type="number" id="offer-discount" name="discount" required class="input-field">
+                </div>
+                <div>
+                    <label for="offer-price" class="block text-gray-700 font-medium">Цена (₽)</label>
+                    <input type="number" id="offer-price" name="price" required class="input-field">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="offer-start-date" class="block text-gray-700 font-medium">Дата начала</label>
+                    <input type="date" id="offer-start-date" name="start_date" required class="input-field">
+                </div>
+                <div>
+                    <label for="offer-end-date" class="block text-gray-700 font-medium">Дата окончания</label>
+                    <input type="date" id="offer-end-date" name="end_date" required class="input-field">
+                </div>
+            </div>
+            <div id="add-status-message" class="text-center font-medium mt-4"></div>
+            <button type="submit" class="btn-primary">Добавить акцию</button>
+        </form>
+    </div>
+
+    <div class="offers-container mt-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Управление акциями</h2>
+        <div id="offers-list" class="space-y-4">
+            <div id="loading" class="text-center text-gray-500">Загрузка акций...</div>
+            <div id="no-offers" class="text-center text-gray-500 hidden">Акций пока нет.</div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase config (замени на свой конфиг!)
+        // Вставьте сюда ваш конфиг Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBVKxZjiE3iVoUOSRJkQhjjA4qXQmf9Xn8",
             authDomain: "nolikby-ae0a3.firebaseapp.com",
@@ -172,18 +131,50 @@
             messagingSenderId: "77429404737",
             appId: "1:77429404737:web:2dc91ad36d1eb2437182c0"
         };
+        const appId = firebaseConfig.projectId;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        let app;
+        let db;
+        let auth;
+        let isFirebaseReady = false;
 
+        const addStatusMessage = document.getElementById('add-status-message');
         const offersListElement = document.getElementById('offers-list');
         const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
         const noOffersElement = document.getElementById('no-offers');
-        const categories = document.querySelectorAll('.category-item');
-        let allOffers = [];
 
-        // Рендер акций
+        if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isFirebaseReady = true;
+                console.log("Firebase initialized successfully.");
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                isFirebaseReady = false;
+                addStatusMessage.textContent = "Ошибка: не удалось инициализировать Firebase. Проверьте конфигурацию.";
+                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+            }
+        } else {
+            console.warn("Firebase configuration is missing. The app will not connect to the database.");
+            addStatusMessage.textContent = "Ошибка: конфигурация Firebase отсутствует. Форма не будет сохранять данные.";
+            addStatusMessage.className = 'text-red-500 font-medium mt-4';
+        }
+
+        async function authenticate() {
+            if (!isFirebaseReady) return;
+            try {
+                await signInAnonymously(auth);
+                console.log('Signed in anonymously.');
+            } catch (error) {
+                console.error("Authentication error:", error);
+                addStatusMessage.textContent = "Ошибка авторизации. Попробуйте обновить страницу.";
+                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+            }
+        }
+
+        // Рендерим акции
         const renderOffers = (offers) => {
             offersListElement.innerHTML = '';
             if (offers.length === 0) {
@@ -192,69 +183,97 @@
                 noOffersElement.classList.add('hidden');
                 offers.forEach(offer => {
                     const offerElement = document.createElement('div');
-                    offerElement.className = "offer-card";
+                    offerElement.className = "flex items-center justify-between p-4 bg-gray-100 rounded-xl";
                     offerElement.innerHTML = `
-                        <img src="${offer.imageUrl}" alt="${offer.title}" class="offer-image">
-                        <div class="p-5 flex-grow">
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">${offer.title}</h3>
-                            <p class="text-sm text-gray-600 mb-2">${offer.description}</p>
-                            <p class="text-sm text-gray-600 mb-1">Категория: <span class="font-medium text-gray-800">${offer.category}</span></p>
-                            <p class="text-sm text-gray-600 mb-1">Город: <span class="font-medium text-gray-800">${offer.city}</span></p>
-                            <div class="flex items-baseline justify-between mt-3">
-                                <span class="text-2xl font-extrabold text-red-600">${offer.discount}%</span>
-                                <span class="text-xl font-bold text-gray-800 ml-2">${offer.price} ₽</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-3">
-                                Период: ${new Date(offer.start_date).toLocaleDateString()} — ${new Date(offer.end_date).toLocaleDateString()}
-                            </p>
+                        <div>
+                            <p class="font-bold">${offer.title}</p>
+                            <p class="text-sm text-gray-600">${offer.city}, ${offer.category}</p>
                         </div>
+                        <button data-id="${offer.id}" class="delete-btn px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors">Удалить</button>
                     `;
                     offersListElement.appendChild(offerElement);
                 });
             }
         };
 
-        // Слушаем изменения коллекции offers
+        // Удаление акции
+        const deleteOffer = async (docId) => {
+            if (!isFirebaseReady || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, "offers", docId);
+                await deleteDoc(docRef);
+                console.log("Документ успешно удален!");
+            } catch (error) {
+                console.error("Ошибка при удалении документа: ", error);
+            }
+        };
+
+        // Слушаем клики на кнопки "Удалить"
+        offersListElement.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const docId = e.target.dataset.id;
+                if (docId) {
+                    deleteOffer(docId);
+                }
+            }
+        });
+
+        // Слушаем изменения коллекции offers в реальном времени
         const offersCollectionRef = collection(db, "offers");
         onSnapshot(offersCollectionRef, (snapshot) => {
-            allOffers = [];
-            if (snapshot.empty) {
-                loadingElement.classList.add('hidden');
-                noOffersElement.classList.remove('hidden');
-                return;
-            }
-
             loadingElement.classList.add('hidden');
+            const offers = [];
             snapshot.forEach(doc => {
-                allOffers.push(doc.data());
+                offers.push({ id: doc.id, ...doc.data() });
             });
-
-            renderOffers(allOffers);
-            offersListElement.classList.remove('hidden');
+            renderOffers(offers);
         }, (error) => {
             console.error("Ошибка при получении акций:", error);
             loadingElement.classList.add('hidden');
-            errorElement.classList.remove('hidden');
+            offersListElement.innerHTML = `<div class="text-center text-red-500">Ошибка загрузки акций.</div>`;
         });
 
-        // Фильтрация по категориям
-        categories.forEach(categoryItem => {
-            categoryItem.addEventListener('click', () => {
-                const selectedCategory = categoryItem.dataset.category;
-                categories.forEach(item => item.classList.remove('active'));
-                categoryItem.classList.add('active');
-                if (selectedCategory === 'Все') {
-                    renderOffers(allOffers);
-                } else {
-                    const filteredOffers = allOffers.filter(offer => offer.category === selectedCategory);
-                    renderOffers(filteredOffers);
-                }
-            });
+        document.getElementById('add-offer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!isFirebaseReady || !auth.currentUser) {
+                addStatusMessage.textContent = "Ошибка: не удалось авторизоваться или Firebase не готов. Попробуйте обновить страницу.";
+                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+                return;
+            }
+
+            addStatusMessage.textContent = "Сохраняем...";
+            addStatusMessage.className = 'text-blue-500 font-medium mt-4';
+
+            const formData = new FormData(e.target);
+            const newOffer = {
+                title: formData.get('title'),
+                imageUrl: formData.get('imageUrl'),
+                description: formData.get('description'),
+                category: formData.get('category'),
+                city: formData.get('city'),
+                discount: parseInt(formData.get('discount')),
+                price: parseInt(formData.get('price')),
+                start_date: new Date(formData.get('start_date')).toISOString(),
+                end_date: new Date(formData.get('end_date')).toISOString(),
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(collection(db, "offers"), newOffer);
+                addStatusMessage.textContent = "Акция успешно добавлена!";
+                addStatusMessage.className = 'text-green-500 font-medium mt-4';
+                e.target.reset();
+            } catch (error) {
+                console.error("Error adding document:", error);
+                addStatusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
+                addStatusMessage.className = 'text-red-500 font-medium mt-4';
+            }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelector('.category-item[data-category="Все"]').click();
-        });
+        if (isFirebaseReady) {
+            authenticate();
+        }
     </script>
 </body>
 </html>
