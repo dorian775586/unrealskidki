@@ -48,6 +48,13 @@
         .nav-item:hover {
             color: #3b82f6;
         }
+        .category-item {
+            cursor: pointer;
+        }
+        .category-item.active {
+            outline: 2px solid #3b82f6;
+            outline-offset: 4px;
+        }
     </style>
 </head>
 <body class="bg-blue-50">
@@ -59,15 +66,10 @@
                 <button class="text-blue-500 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <div class="relative flex-grow mx-4">
-                    <select class="block w-full text-center py-2 px-3 pr-8 rounded-full bg-gray-200 text-gray-800 border-gray-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-300">
-                        <option value="gomel">Гомель</option>
-                        <option value="minsk">Минск</option>
-                        <option value="brest">Брест</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                    </div>
+                <!-- Обновленный блок для выбора города -->
+                <div class="flex items-center justify-center text-lg font-bold text-gray-800 mx-4">
+                    <span>Гомель</span>
+                    <svg class="w-5 h-5 ml-2 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                 </div>
                 <!-- Ссылка на админ-панель -->
                 <a href="admin.html" class="text-blue-500 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none" title="Панель администратора">
@@ -88,50 +90,42 @@
             <!-- Поиск -->
             <section class="mb-8">
                 <div class="relative">
-                    <input type="text" placeholder="Я ищу..." class="w-full py-3 px-5 pr-12 rounded-full text-gray-800 text-base shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <input type="text" id="search-input" placeholder="Я ищу..." class="w-full py-3 px-5 pr-12 rounded-full text-gray-800 text-base shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300">
                     <svg class="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </section>
             
             <!-- Категории -->
             <section id="categories-section" class="mb-8">
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                    <!-- Заглушки для категорий -->
-                    <div class="flex flex-col items-center p-1">
-                        <div class="w-full aspect-square bg-blue-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://placehold.co/100x100/1e40af/ffffff?text=Еда" alt="Еда" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Еда</span>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Категории</h2>
+                <div id="categories-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Все">
+                        <img src="https://placehold.co/100x100/3b82f6/ffffff?text=Все" alt="Все" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Все</span>
                     </div>
-                    <div class="flex flex-col items-center p-1">
-                        <div class="w-full aspect-square bg-red-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://placehold.co/100x100/b91c1c/ffffff?text=Одежда" alt="Одежда" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Одежда</span>
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Еда">
+                        <img src="https://placehold.co/100x100/10b981/ffffff?text=Еда" alt="Еда" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Еда</span>
                     </div>
-                    <div class="flex flex-col items-center p-1">
-                        <div class="w-full aspect-square bg-green-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://placehold.co/100x100/10b981/ffffff?text=Электроника" alt="Электроника" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Электроника</span>
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Одежда">
+                        <img src="https://placehold.co/100x100/ef4444/ffffff?text=Одежда" alt="Одежда" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Одежда</span>
                     </div>
-                    <div class="flex flex-col items-center p-1">
-                        <div class="w-full aspect-square bg-purple-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=Красота" alt="Красота" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Красота</span>
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Электроника">
+                        <img src="https://placehold.co/100x100/3b82f6/ffffff?text=Электроника" alt="Электроника" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Электроника</span>
                     </div>
-                    <div class="flex flex-col items-center p-1">
-                        <div class="w-full aspect-square bg-yellow-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://placehold.co/100x100/eab308/ffffff?text=Дом" alt="Дом" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Дом</span>
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Красота">
+                        <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=Красота" alt="Красота" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Красота</span>
                     </div>
-                    <div class="flex flex-col items-center p-1">
-                        <div class="w-full aspect-square bg-pink-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://placehold.co/100x100/ec4899/ffffff?text=Развлечения" alt="Развлечения" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Развлечения</span>
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Дом">
+                        <img src="https://placehold.co/100x100/eab308/ffffff?text=Дом" alt="Дом" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Дом</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-white rounded-lg p-4 shadow-lg text-center transition-transform transform hover:scale-105 category-item" data-category="Развлечения">
+                        <img src="https://placehold.co/100x100/ec4899/ffffff?text=Развлечения" alt="Развлечения" class="w-20 h-20 mb-2">
+                        <span class="text-base font-medium text-gray-700">Развлечения</span>
                     </div>
                 </div>
             </section>
@@ -175,25 +169,61 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firestore configuration
+        // Firebase configuration
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // DOM elements
         const offersListElement = document.getElementById('offers-list');
         const loadingElement = document.getElementById('loading');
         const errorElement = document.getElementById('error');
         const noOffersElement = document.getElementById('no-offers');
+        const categoriesList = document.getElementById('categories-list');
+        const categories = document.querySelectorAll('.category-item');
+
+        let allOffers = [];
+
+        // Function to render offers based on a given list
+        const renderOffers = (offers) => {
+            offersListElement.innerHTML = '';
+            if (offers.length === 0) {
+                noOffersElement.classList.remove('hidden');
+            } else {
+                noOffersElement.classList.add('hidden');
+                offers.forEach(offer => {
+                    const offerElement = document.createElement('div');
+                    offerElement.className = "offer-card";
+                    offerElement.innerHTML = `
+                        <img src="${offer.imageUrl}" alt="${offer.title}" class="offer-image">
+                        <div class="p-5 flex-grow">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">${offer.title}</h3>
+                            <p class="text-sm text-gray-600 mb-2">${offer.description}</p>
+                            <p class="text-sm text-gray-600 mb-1">Категория: <span class="font-medium text-gray-800">${offer.category}</span></p>
+                            <p class="text-sm text-gray-600 mb-1">Город: <span class="font-medium text-gray-800">${offer.city}</span></p>
+                            <div class="flex items-baseline justify-between mt-3">
+                                <span class="text-2xl font-extrabold text-red-600">${offer.discount}%</span>
+                                <span class="text-xl font-bold text-gray-800 ml-2">${offer.price} ₽</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-3">
+                                Период: ${new Date(offer.start_date).toLocaleDateString()} — ${new Date(offer.end_date).toLocaleDateString()}
+                            </p>
+                        </div>
+                    `;
+                    offersListElement.appendChild(offerElement);
+                });
+            }
+        };
 
         // Listen for real-time changes in the offers collection
         const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
         onSnapshot(offersCollectionRef, (snapshot) => {
-            offersListElement.innerHTML = ''; // Clear previous offers
-            
+            allOffers = [];
             if (snapshot.empty) {
                 loadingElement.classList.add('hidden');
                 noOffersElement.classList.remove('hidden');
@@ -201,36 +231,39 @@
             }
 
             loadingElement.classList.add('hidden');
-            noOffersElement.classList.add('hidden');
-
             snapshot.forEach(doc => {
-                const offer = doc.data();
-                const offerElement = document.createElement('div');
-                offerElement.className = "offer-card";
-                offerElement.innerHTML = `
-                    <img src="${offer.imageUrl}" alt="${offer.title}" class="offer-image">
-                    <div class="p-5 flex-grow">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">${offer.title}</h3>
-                        <p class="text-sm text-gray-600 mb-2">${offer.description}</p>
-                        <p class="text-sm text-gray-600 mb-1">Категория: <span class="font-medium text-gray-800">${offer.category}</span></p>
-                        <p class="text-sm text-gray-600 mb-1">Город: <span class="font-medium text-gray-800">${offer.city}</span></p>
-                        <div class="flex items-baseline justify-between mt-3">
-                            <span class="text-2xl font-extrabold text-red-600">${offer.discount}%</span>
-                            <span class="text-xl font-bold text-gray-800 ml-2">${offer.price} ₽</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-3">
-                            Период: ${new Date(offer.start_date).toLocaleDateString()} — ${new Date(offer.end_date).toLocaleDateString()}
-                        </p>
-                    </div>
-                `;
-                offersListElement.appendChild(offerElement);
+                allOffers.push(doc.data());
             });
+            
+            // Initially render all offers
+            renderOffers(allOffers);
             offersListElement.classList.remove('hidden');
 
         }, (error) => {
             console.error("Ошибка при получении акций:", error);
             loadingElement.classList.add('hidden');
             errorElement.classList.remove('hidden');
+        });
+
+        // Add click event listeners to categories for filtering
+        categories.forEach(categoryItem => {
+            categoryItem.addEventListener('click', () => {
+                const selectedCategory = categoryItem.dataset.category;
+
+                // Remove active class from all categories
+                categories.forEach(item => item.classList.remove('active'));
+
+                // Add active class to the clicked category
+                categoryItem.classList.add('active');
+
+                // Filter offers based on the selected category
+                if (selectedCategory === 'Все') {
+                    renderOffers(allOffers);
+                } else {
+                    const filteredOffers = allOffers.filter(offer => offer.category === selectedCategory);
+                    renderOffers(filteredOffers);
+                }
+            });
         });
 
         // categories link functionality
@@ -250,6 +283,8 @@
                     behavior: 'smooth'
                 });
             });
+            // Set "Все" as active by default on load
+            document.querySelector('.category-item[data-category="Все"]').click();
         });
     </script>
 </body>
