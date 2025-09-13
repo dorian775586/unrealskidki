@@ -113,19 +113,30 @@
         import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firestore configuration
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        let app;
+        let db;
+        let auth;
+
+        if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } else {
+            console.error("Firebase config is missing. The app will not function correctly.");
+        }
 
         const form = document.getElementById('add-offer-form');
         const statusMessage = document.getElementById('status-message');
 
         async function authenticate() {
+            if (!auth) {
+                console.error("Authentication skipped: Firebase is not initialized.");
+                return;
+            }
             try {
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
@@ -144,10 +155,7 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const userId = auth.currentUser ? auth.currentUser.uid : 'anonymous_user';
-
-            // Check if authenticated before proceeding
-            if (!auth.currentUser) {
+            if (!auth || !auth.currentUser) {
                 statusMessage.textContent = "Ошибка: не удалось авторизоваться. Попробуйте обновить страницу.";
                 statusMessage.className = 'text-red-500 font-medium mt-4';
                 return;
@@ -171,7 +179,11 @@
             };
 
             try {
-                // Save the new offer to the public collection
+                if (!db) {
+                    statusMessage.textContent = "Ошибка: база данных не инициализирована.";
+                    statusMessage.className = 'text-red-500 font-medium mt-4';
+                    return;
+                }
                 const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
                 await addDoc(offersCollectionRef, newOffer);
                 
