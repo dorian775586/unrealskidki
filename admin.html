@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель Администратора Nolikby</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin-top: 0.25rem;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #3b82f6;
+            color: #ffffff;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-blue-50">
+    <div class="form-container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Добавить новую акцию</h1>
+        <form id="add-offer-form" class="space-y-4">
+            <div>
+                <label for="offer-title" class="block text-gray-700 font-medium">Название акции</label>
+                <input type="text" id="offer-title" name="title" required class="input-field">
+            </div>
+            <div>
+                <label for="offer-image" class="block text-gray-700 font-medium">URL фото</label>
+                <input type="url" id="offer-image" name="imageUrl" required class="input-field">
+            </div>
+            <div>
+                <label for="offer-description" class="block text-gray-700 font-medium">Описание</label>
+                <textarea id="offer-description" name="description" rows="4" required class="input-field"></textarea>
+            </div>
+            <div>
+                <label for="offer-category" class="block text-gray-700 font-medium">Категория</label>
+                <select id="offer-category" name="category" required class="input-field">
+                    <option value="" disabled selected>Выберите категорию</option>
+                    <option value="Еда">Еда</option>
+                    <option value="Одежда">Одежда</option>
+                    <option value="Электроника">Электроника</option>
+                    <option value="Красота">Красота</option>
+                    <option value="Дом">Дом</option>
+                    <option value="Развлечения">Развлечения</option>
+                </select>
+            </div>
+            <div>
+                <label for="offer-city" class="block text-gray-700 font-medium">Город</label>
+                <select id="offer-city" name="city" required class="input-field">
+                    <option value="" disabled selected>Выберите город</option>
+                    <option value="Гомель">Гомель</option>
+                    <option value="Минск">Минск</option>
+                    <option value="Брест">Брест</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="offer-discount" class="block text-gray-700 font-medium">Скидка (%)</label>
+                    <input type="number" id="offer-discount" name="discount" required class="input-field">
+                </div>
+                <div>
+                    <label for="offer-price" class="block text-gray-700 font-medium">Цена (₽)</label>
+                    <input type="number" id="offer-price" name="price" required class="input-field">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="offer-start-date" class="block text-gray-700 font-medium">Дата начала</label>
+                    <input type="date" id="offer-start-date" name="start_date" required class="input-field">
+                </div>
+                <div>
+                    <label for="offer-end-date" class="block text-gray-700 font-medium">Дата окончания</label>
+                    <input type="date" id="offer-end-date" name="end_date" required class="input-field">
+                </div>
+            </div>
+            <div id="status-message" class="text-center font-medium mt-4"></div>
+            <button type="submit" class="btn-primary">Добавить акцию</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firestore configuration
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const form = document.getElementById('add-offer-form');
+        const statusMessage = document.getElementById('status-message');
+
+        async function authenticate() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log('Authenticated with custom token.');
+                } else {
+                    await signInAnonymously(auth);
+                    console.log('Signed in anonymously.');
+                }
+            } catch (error) {
+                console.error("Authentication error:", error);
+                statusMessage.textContent = "Ошибка авторизации. Попробуйте обновить страницу.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = auth.currentUser ? auth.currentUser.uid : 'anonymous_user';
+
+            // Check if authenticated before proceeding
+            if (!auth.currentUser) {
+                statusMessage.textContent = "Ошибка: не удалось авторизоваться. Попробуйте обновить страницу.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
+                return;
+            }
+
+            statusMessage.textContent = "Сохраняем...";
+            statusMessage.className = 'text-blue-500 font-medium mt-4';
+
+            const formData = new FormData(form);
+            const newOffer = {
+                title: formData.get('title'),
+                imageUrl: formData.get('imageUrl'),
+                description: formData.get('description'),
+                category: formData.get('category'),
+                city: formData.get('city'),
+                discount: parseInt(formData.get('discount')),
+                price: parseInt(formData.get('price')),
+                start_date: new Date(formData.get('start_date')).toISOString(),
+                end_date: new Date(formData.get('end_date')).toISOString(),
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                // Save the new offer to the public collection
+                const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
+                await addDoc(offersCollectionRef, newOffer);
+                
+                statusMessage.textContent = "Акция успешно добавлена!";
+                statusMessage.className = 'text-green-500 font-medium mt-4';
+                form.reset();
+            } catch (error) {
+                console.error("Error adding document:", error);
+                statusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
+                statusMessage.className = 'text-red-500 font-medium mt-4';
+            }
+        });
+
+        authenticate();
+    </script>
+</body>
+</html>

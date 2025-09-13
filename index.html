@@ -3,121 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nolikby - Каталог</title>
+    <title>Nolikby - Каталог Акций</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Светло-серый фон */
+            background-color: #f3f4f6;
+        }
+        .offer-card {
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .offer-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #e2e8f0;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 0.5rem 0;
+            color: #6b7280;
+            font-size: 0.75rem;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+        .nav-item.active {
+            color: #3b82f6;
+        }
+        .nav-item:hover {
+            color: #3b82f6;
         }
     </style>
 </head>
 <body class="bg-blue-50">
 
-    <div id="app" class="container mx-auto p-4 md:p-8">
-        <!-- Рекламный баннер-карусель -->
-        <div id="banner-carousel" class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl mb-8 md:h-64 h-48 relative">
-            <div id="banners" class="flex transition-transform duration-500 ease-in-out h-full">
-                <!-- Пример баннера 1 -->
-                <div class="flex-none w-full h-full flex items-center justify-center p-4">
-                    <img src="https://placehold.co/1200x600/1e293b/d1d5db?text=HOT+DEAL" alt="Баннер с акцией" class="object-cover w-full h-full">
+    <div id="app" class="min-h-screen pb-20">
+        <!-- Шапка -->
+        <header id="main-header" class="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-10">
+            <div class="container mx-auto flex items-center justify-between">
+                <button class="text-blue-500 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="relative flex-grow mx-4">
+                    <select class="block w-full text-center py-2 px-3 pr-8 rounded-full bg-gray-200 text-gray-800 border-gray-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <option value="gomel">Гомель</option>
+                        <option value="minsk">Минск</option>
+                        <option value="brest">Брест</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
                 </div>
-                <!-- Пример баннера 2 -->
-                <div class="flex-none w-full h-full flex items-center justify-center p-4">
-                    <img src="https://placehold.co/1200x600/1e293b/d1d5db?text=НОВЫЕ+СКИДКИ" alt="Баннер с новыми скидками" class="object-cover w-full h-full">
-                </div>
-                <!-- Пример баннера 3 -->
-                <div class="flex-none w-full h-full flex items-center justify-center p-4">
-                    <img src="https://placehold.co/1200x600/1e293b/d1d5db?text=ЛУЧШИЕ+ПРЕДЛОЖЕНИЯ" alt="Баннер с лучшими предложениями" class="object-cover w-full h-full">
-                </div>
+                <!-- Ссылка на админ-панель -->
+                <a href="admin.html" class="text-blue-500 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none" title="Панель администратора">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                </a>
             </div>
-        </div>
+        </header>
 
-        <!-- Поле для поиска -->
-        <div class="mb-8">
-            <div class="relative">
-                <input type="text" placeholder="Я ищу..." class="w-full py-4 px-6 pr-12 rounded-full text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+        <main class="container mx-auto p-4 md:p-6">
+            <!-- Выгодные предложения (Баннер) -->
+            <section class="mb-8">
+                <div id="hot-offers-carousel" class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl overflow-hidden shadow-xl md:h-56 h-40 relative flex items-center justify-center p-4 text-white text-center">
+                    <h3 class="text-3xl font-bold">Скидка до 70% на всё!</h3>
+                    <p class="text-lg mt-2">Эксклюзивно для наших пользователей</p>
+                </div>
+            </section>
+
+            <!-- Поиск -->
+            <section class="mb-8">
+                <div class="relative">
+                    <input type="text" placeholder="Я ищу..." class="w-full py-3 px-5 pr-12 rounded-full text-gray-800 text-base shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <svg class="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </section>
+            
+            <!-- Категории -->
+            <section id="categories-section" class="mb-8">
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                    <!-- Заглушки для категорий -->
+                    <div class="flex flex-col items-center p-1">
+                        <div class="w-full aspect-square bg-blue-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://placehold.co/100x100/1e40af/ffffff?text=Еда" alt="Еда" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Еда</span>
+                    </div>
+                    <div class="flex flex-col items-center p-1">
+                        <div class="w-full aspect-square bg-red-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://placehold.co/100x100/b91c1c/ffffff?text=Одежда" alt="Одежда" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Одежда</span>
+                    </div>
+                    <div class="flex flex-col items-center p-1">
+                        <div class="w-full aspect-square bg-green-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://placehold.co/100x100/10b981/ffffff?text=Электроника" alt="Электроника" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Электроника</span>
+                    </div>
+                    <div class="flex flex-col items-center p-1">
+                        <div class="w-full aspect-square bg-purple-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=Красота" alt="Красота" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Красота</span>
+                    </div>
+                    <div class="flex flex-col items-center p-1">
+                        <div class="w-full aspect-square bg-yellow-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://placehold.co/100x100/eab308/ffffff?text=Дом" alt="Дом" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Дом</span>
+                    </div>
+                    <div class="flex flex-col items-center p-1">
+                        <div class="w-full aspect-square bg-pink-500 rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://placehold.co/100x100/ec4899/ffffff?text=Развлечения" alt="Развлечения" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-center text-xs sm:text-sm font-medium text-gray-700 mt-2">Развлечения</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Все акции -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Все акции</h2>
+                <div id="loading" class="text-center text-gray-500 font-semibold text-lg">Загрузка...</div>
+                <div id="error" class="text-center text-red-500 font-semibold text-lg hidden">Ошибка при загрузке акций</div>
+                <div id="offers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div id="no-offers" class="text-center text-gray-500 font-semibold text-lg hidden">Акций пока нет.</div>
+            </section>
+        </main>
+
+        <!-- Нижнее навигационное меню -->
+        <nav class="fixed bottom-0 left-0 w-full bg-white shadow-2xl border-t border-gray-200 z-20">
+            <div class="container mx-auto flex justify-around h-16">
+                <a href="#" class="nav-item">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                    <span>Главная</span>
+                </a>
+                <a href="#" id="categories-link" class="nav-item active">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                    <span>Категории</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                    <span>Мои Купоны</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                    <span>Избранное</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                    <span>Профиль</span>
+                </a>
             </div>
-        </div>
-
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Каталог акций</h1>
-
-        <div id="loading" class="text-center text-gray-500 font-semibold text-lg">Загрузка...</div>
-        <div id="error" class="text-center text-red-500 font-semibold text-lg hidden">Ошибка при загрузке акций</div>
-        <div id="offers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        <div id="no-offers" class="text-center text-gray-500 font-semibold text-lg hidden">Акций пока нет.</div>
+        </nav>
     </div>
 
-    <script>
-        // ВАЖНО: замените этот URL на URL вашего бэкенд-сервиса на Render.
-        const BACKEND_URL = "https://nolikby-backend-2.onrender.com";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        async function fetchOffers() {
-            const loadingElement = document.getElementById('loading');
-            const errorElement = document.getElementById('error');
-            const offersListElement = document.getElementById('offers-list');
-            const noOffersElement = document.getElementById('no-offers');
+        // Firestore configuration
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-            loadingElement.classList.remove('hidden');
-            errorElement.classList.add('hidden');
-            offersListElement.classList.add('hidden');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const offersListElement = document.getElementById('offers-list');
+        const loadingElement = document.getElementById('loading');
+        const errorElement = document.getElementById('error');
+        const noOffersElement = document.getElementById('no-offers');
+
+        // Listen for real-time changes in the offers collection
+        const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
+        onSnapshot(offersCollectionRef, (snapshot) => {
+            offersListElement.innerHTML = ''; // Clear previous offers
+            
+            if (snapshot.empty) {
+                loadingElement.classList.add('hidden');
+                noOffersElement.classList.remove('hidden');
+                return;
+            }
+
+            loadingElement.classList.add('hidden');
             noOffersElement.classList.add('hidden');
 
-            try {
-                const response = await fetch(`${BACKEND_URL}/offers`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const offers = await response.json();
+            snapshot.forEach(doc => {
+                const offer = doc.data();
+                const offerElement = document.createElement('div');
+                offerElement.className = "offer-card";
+                offerElement.innerHTML = `
+                    <img src="${offer.imageUrl}" alt="${offer.title}" class="offer-image">
+                    <div class="p-5 flex-grow">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">${offer.title}</h3>
+                        <p class="text-sm text-gray-600 mb-2">${offer.description}</p>
+                        <p class="text-sm text-gray-600 mb-1">Категория: <span class="font-medium text-gray-800">${offer.category}</span></p>
+                        <p class="text-sm text-gray-600 mb-1">Город: <span class="font-medium text-gray-800">${offer.city}</span></p>
+                        <div class="flex items-baseline justify-between mt-3">
+                            <span class="text-2xl font-extrabold text-red-600">${offer.discount}%</span>
+                            <span class="text-xl font-bold text-gray-800 ml-2">${offer.price} ₽</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">
+                            Период: ${new Date(offer.start_date).toLocaleDateString()} — ${new Date(offer.end_date).toLocaleDateString()}
+                        </p>
+                    </div>
+                `;
+                offersListElement.appendChild(offerElement);
+            });
+            offersListElement.classList.remove('hidden');
 
-                if (offers.length === 0) {
-                    noOffersElement.classList.remove('hidden');
-                } else {
-                    offers.forEach(offer => {
-                        const offerElement = document.createElement('div');
-                        offerElement.className = "bg-white rounded-2xl shadow-xl p-6 flex flex-col transition-transform transform hover:scale-105 hover:shadow-2xl";
-                        offerElement.innerHTML = `
-                            <h2 class="text-2xl font-bold text-gray-900 mb-2">${offer.title}</h2>
-                            <div class="flex flex-col gap-2 text-sm text-gray-600 mb-4">
-                                <p>Категория: <span class="font-medium text-gray-800">${offer.category}</span></p>
-                                <p>Город: <span class="font-medium text-gray-800">${offer.city}</span></p>
-                                <p>Скидка: <span class="font-bold text-red-500 text-xl">${offer.discount}%</span></p>
-                                <p>Цена: <span class="font-bold text-green-600 text-xl">${offer.price} ₽</span></p>
-                                <p>Популярность: <span class="font-medium text-gray-800">${offer.popularity}</span></p>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-auto">
-                                Период: ${new Date(offer.start_date).toLocaleDateString()} — ${new Date(offer.end_date).toLocaleDateString()}
-                            </p>
-                        `;
-                        offersListElement.appendChild(offerElement);
-                    });
-                    offersListElement.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("Ошибка при загрузке акций:", error);
-                errorElement.classList.remove('hidden');
-            } finally {
-                loadingElement.classList.add('hidden');
-            }
-        }
+        }, (error) => {
+            console.error("Ошибка при получении акций:", error);
+            loadingElement.classList.add('hidden');
+            errorElement.classList.remove('hidden');
+        });
 
-        // Логика для карусели
-        let currentBanner = 0;
-        const banners = document.getElementById('banners');
-        const totalBanners = banners.children.length;
+        // categories link functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoriesLink = document.getElementById('categories-link');
+            const categoriesSection = document.getElementById('categories-section');
+            const header = document.getElementById('main-header');
 
-        function showNextBanner() {
-            currentBanner = (currentBanner + 1) % totalBanners;
-            banners.style.transform = `translateX(-${currentBanner * 100}%)`;
-        }
+            categoriesLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                
+                const headerHeight = header.offsetHeight;
+                const scrollPosition = categoriesSection.offsetTop - headerHeight;
 
-        setInterval(showNextBanner, 5000); // Смена баннера каждые 5 секунд
-
-        document.addEventListener('DOMContentLoaded', fetchOffers);
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
     </script>
 </body>
 </html>
