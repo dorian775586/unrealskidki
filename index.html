@@ -9,24 +9,52 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f3f4f6; /* Светло-серый фон */
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-blue-50">
 
     <div id="app" class="container mx-auto p-4 md:p-8">
-        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Каталог акций</h1>
+        <!-- Рекламный баннер-карусель -->
+        <div id="banner-carousel" class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl mb-8 md:h-64 h-48 relative">
+            <div id="banners" class="flex transition-transform duration-500 ease-in-out h-full">
+                <!-- Пример баннера 1 -->
+                <div class="flex-none w-full h-full flex items-center justify-center p-4">
+                    <img src="https://placehold.co/1200x600/1e293b/d1d5db?text=HOT+DEAL" alt="Баннер с акцией" class="object-cover w-full h-full">
+                </div>
+                <!-- Пример баннера 2 -->
+                <div class="flex-none w-full h-full flex items-center justify-center p-4">
+                    <img src="https://placehold.co/1200x600/1e293b/d1d5db?text=НОВЫЕ+СКИДКИ" alt="Баннер с новыми скидками" class="object-cover w-full h-full">
+                </div>
+                <!-- Пример баннера 3 -->
+                <div class="flex-none w-full h-full flex items-center justify-center p-4">
+                    <img src="https://placehold.co/1200x600/1e293b/d1d5db?text=ЛУЧШИЕ+ПРЕДЛОЖЕНИЯ" alt="Баннер с лучшими предложениями" class="object-cover w-full h-full">
+                </div>
+            </div>
+        </div>
+
+        <!-- Поле для поиска -->
+        <div class="mb-8">
+            <div class="relative">
+                <input type="text" placeholder="Я ищу..." class="w-full py-4 px-6 pr-12 rounded-full text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Каталог акций</h1>
 
         <div id="loading" class="text-center text-gray-500 font-semibold text-lg">Загрузка...</div>
         <div id="error" class="text-center text-red-500 font-semibold text-lg hidden">Ошибка при загрузке акций</div>
-        <div id="offers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+        <div id="offers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         <div id="no-offers" class="text-center text-gray-500 font-semibold text-lg hidden">Акций пока нет.</div>
     </div>
 
     <script>
         // ВАЖНО: замените этот URL на URL вашего бэкенд-сервиса на Render.
-        const BACKEND_URL = "https://your-backend-url.onrender.com";
+        const BACKEND_URL = "https://nolikby-backend-2.onrender.com";
 
         async function fetchOffers() {
             const loadingElement = document.getElementById('loading');
@@ -51,14 +79,14 @@
                 } else {
                     offers.forEach(offer => {
                         const offerElement = document.createElement('div');
-                        offerElement.className = "bg-white rounded-lg shadow-lg p-6 flex flex-col transition-transform transform hover:scale-105";
+                        offerElement.className = "bg-white rounded-2xl shadow-xl p-6 flex flex-col transition-transform transform hover:scale-105 hover:shadow-2xl";
                         offerElement.innerHTML = `
                             <h2 class="text-2xl font-bold text-gray-900 mb-2">${offer.title}</h2>
                             <div class="flex flex-col gap-2 text-sm text-gray-600 mb-4">
                                 <p>Категория: <span class="font-medium text-gray-800">${offer.category}</span></p>
                                 <p>Город: <span class="font-medium text-gray-800">${offer.city}</span></p>
-                                <p>Скидка: <span class="font-medium text-red-500">${offer.discount}%</span></p>
-                                <p>Цена: <span class="font-medium text-gray-800">${offer.price} ₽</span></p>
+                                <p>Скидка: <span class="font-bold text-red-500 text-xl">${offer.discount}%</span></p>
+                                <p>Цена: <span class="font-bold text-green-600 text-xl">${offer.price} ₽</span></p>
                                 <p>Популярность: <span class="font-medium text-gray-800">${offer.popularity}</span></p>
                             </div>
                             <p class="text-xs text-gray-500 mt-auto">
@@ -76,6 +104,18 @@
                 loadingElement.classList.add('hidden');
             }
         }
+
+        // Логика для карусели
+        let currentBanner = 0;
+        const banners = document.getElementById('banners');
+        const totalBanners = banners.children.length;
+
+        function showNextBanner() {
+            currentBanner = (currentBanner + 1) % totalBanners;
+            banners.style.transform = `translateX(-${currentBanner * 100}%)`;
+        }
+
+        setInterval(showNextBanner, 5000); // Смена баннера каждые 5 секунд
 
         document.addEventListener('DOMContentLoaded', fetchOffers);
     </script>
