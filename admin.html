@@ -24,7 +24,6 @@
             padding: 0.75rem 1rem;
             border-radius: 0.75rem;
             border: 1px solid #d1d5db;
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             margin-top: 0.25rem;
         }
         .input-field:focus {
@@ -110,62 +109,46 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const statusMessage = document.getElementById('status-message');
         const form = document.getElementById('add-offer-form');
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // ✅ Твой реальный конфиг
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVKxZjiE3iVoUOSRJkQhjjA4qXQmf9Xn8",
+            authDomain: "nolikby-ae0a3.firebaseapp.com",
+            projectId: "nolikby-ae0a3",
+            storageBucket: "nolikby-ae0a3.firebasestorage.app",
+            messagingSenderId: "77429404737",
+            appId: "1:77429404737:web:2dc91ad36d1eb2437182c0"
+        };
 
-        let app;
-        let db;
-        let auth;
-        let isFirebaseReady = false;
+        // Инициализация Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        if (firebaseConfig && appId) {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                isFirebaseReady = true;
-                console.log("Firebase initialized successfully.");
-            } catch (e) {
-                console.error("Firebase initialization failed:", e);
-                isFirebaseReady = false;
-                statusMessage.textContent = "Ошибка: не удалось инициализировать Firebase. Проверьте конфигурацию.";
-                statusMessage.className = 'text-red-500 font-medium mt-4';
-            }
-        } else {
-            console.warn("Firebase configuration or app ID is missing. The app will not connect to the database.");
-            statusMessage.textContent = "Ошибка: конфигурация Firebase отсутствует. Форма не будет сохранять данные.";
-            statusMessage.className = 'text-red-500 font-medium mt-4';
-        }
-
+        // Авторизация (анонимная)
         async function authenticate() {
-            if (!isFirebaseReady) return;
             try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                    console.log('Authenticated with custom token.');
-                } else {
-                    await signInAnonymously(auth);
-                    console.log('Signed in anonymously.');
-                }
+                await signInAnonymously(auth);
+                console.log("Signed in anonymously.");
             } catch (error) {
                 console.error("Authentication error:", error);
                 statusMessage.textContent = "Ошибка авторизации. Попробуйте обновить страницу.";
                 statusMessage.className = 'text-red-500 font-medium mt-4';
             }
         }
+        authenticate();
 
+        // Обработка формы
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (!isFirebaseReady || !auth || !auth.currentUser) {
-                statusMessage.textContent = "Ошибка: не удалось авторизоваться или Firebase не готов. Попробуйте обновить страницу.";
+
+            if (!auth.currentUser) {
+                statusMessage.textContent = "Ошибка: Firebase не готов.";
                 statusMessage.className = 'text-red-500 font-medium mt-4';
                 return;
             }
@@ -184,26 +167,23 @@
                 price: parseInt(formData.get('price')),
                 start_date: new Date(formData.get('start_date')).toISOString(),
                 end_date: new Date(formData.get('end_date')).toISOString(),
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                userId: auth.currentUser.uid // 👤 кто добавил
             };
 
             try {
-                const offersCollectionRef = collection(db, `artifacts/${appId}/public/data/offers`);
+                const offersCollectionRef = collection(db, "offers");
                 await addDoc(offersCollectionRef, newOffer);
-                
+
                 statusMessage.textContent = "Акция успешно добавлена!";
                 statusMessage.className = 'text-green-500 font-medium mt-4';
                 form.reset();
             } catch (error) {
                 console.error("Error adding document:", error);
-                statusMessage.textContent = "Ошибка при добавлении акции. Пожалуйста, попробуйте снова.";
+                statusMessage.textContent = "Ошибка при добавлении акции. Попробуйте снова.";
                 statusMessage.className = 'text-red-500 font-medium mt-4';
             }
         });
-
-        if (isFirebaseReady) {
-            authenticate();
-        }
     </script>
 </body>
 </html>
