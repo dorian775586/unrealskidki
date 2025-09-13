@@ -113,20 +113,23 @@
         import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let app;
         let db;
         let auth;
 
-        if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+        if (firebaseConfig) {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
+            console.log("Firebase initialized successfully.");
         } else {
-            console.error("Firebase config is missing. The app will not function correctly.");
+            console.error("Firebase config is missing from the environment. The app will not function correctly.");
+            document.getElementById('status-message').textContent = "Ошибка: конфигурация Firebase отсутствует. Приложение не будет работать.";
+            document.getElementById('status-message').className = 'text-red-500 font-medium mt-4';
         }
 
         const form = document.getElementById('add-offer-form');
